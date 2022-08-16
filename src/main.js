@@ -5,9 +5,12 @@ import Home from "./components/Home.vue";
 import "./index.css";
 
 
-const routes = [{
-    path: "/", component: Home
-}];
+const routes = [
+  {
+    path: "/discord-anonymous-post/",
+    component: Home,
+  },
+];
 
 const router = createRouter({
     history: createWebHistory(),
