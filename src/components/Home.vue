@@ -1,13 +1,15 @@
 <template>
-  <Login v-if="!loggedIn"></Login>
-
-  <div class="h-full w-full text-white" v-if="loggedIn">
+  <Login v-if="status == 'noLogging'"></Login>
+  <Loading v-if="status == 'loading'"></Loading>
+  <div class="h-full w-full text-white" v-if="status == 'loggedIn'">
 
     <div class="mx-auto w-full bg-[#18191c] top-0 fixed p-[16px]">
-      <div class="bg-red-600 w-full h-[66px] top-0 left-0 absolute"></div>
-      <div class="h-[100px] w-[100px] rounded-[50%] bg-white scale-100 border-[#18191c] border-[6px]"></div>
-      <b>__tseng__</b>
-      <b class="text-[#b9bbbe]">#0888</b>
+      <div class="w-full h-[66px] top-0 left-0 absolute" :style="{backgroundColor: userData?.banner_color}"></div>
+      <img
+      class="h-[100px] w-[100px] rounded-[50%] scale-100 border-[#18191c] border-[6px]"
+      :src="`https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}`">
+      <b>{{ userData?.username }}</b>
+      <b class="text-[#b9bbbe]">#{{ userData?.discriminator }}</b>
     </div>
 
     <div class="flex min-h-[50px] h-max w-auto left-0 right-0 bottom-0 rounded-[3px] bg-[#40444b] items-start m-[16px] px-[16px] py-[11px] fixed">
@@ -18,6 +20,7 @@
         ></path>
       </svg>
       <div v-for="file in files"></div>
+
       <textarea
         ref="textarea"
         v-model="input"
@@ -26,32 +29,49 @@
       />
     </div>
   </div>
+  
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useRoute } from "vue-router";
-import { useFileDialog, useTextareaAutosize } from "@vueuse/core"
+import { useMagicKeys, whenever } from "@vueuse/core";
+import { useFileDialog, useTextareaAutosize,onKeyStroke } from "@vueuse/core"
 import Login from "./Login.vue";
+import Loading from "./Loading.vue"
 import axios from "axios";
 
-const { textarea, input } = useTextareaAutosize();
+
+onKeyStroke('Enter', (e) => {
+  if (!e.shiftKey) {
+    if (input.value) {
+      console.log(input.value);
+      textarea.value.value = ''
+      input.value = '';
+    }
+    e.preventDefault();
+  }
+})
 
 const route = useRoute();
 const code = route.query.code;
-const loggedIn = ref(false);
+const status = ref("noLogging");
 const { files, open, reset } = useFileDialog();
+const { textarea, input } = useTextareaAutosize();
+const { shift, enter,c } = useMagicKeys();
+const userData = ref({})
 
 if (code) {
   a(code);
 }
 
 async function a(code) {
-  loggedIn.value = true;
+  status.value = "loading";
   const tokens = await exchangeCode(code);
   const get = getWithToken(tokens["access_token"]);
-  const response = await get("/users/@me");
-  console.log(response);
+  userData.value = await get("/users/@me");
+  console.log(userData.value);
+  status.value = "loggedIn";
 }
 
 async function exchangeCode() {
