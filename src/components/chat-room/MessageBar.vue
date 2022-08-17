@@ -1,5 +1,5 @@
 <template>
-    <div class="flex min-h-[50px] max-h-[50%] h-max w-auto left-0 right-0 bottom-0 rounded-[3px] bg-[#40444b] m-[16px] px-[16px] py-[11px] fixed overflow-y-auto">
+    <div class="flex min-h-[50px] max-h-[50%] h-max w-auto rounded-[3px] bg-[#40444b] px-[16px] py-[11px] overflow-y-auto">
       <svg class="fixed mt-[2px]" width="24" height="24" viewBox="0 0 24 24" @click="open">
         <path
           fill="#dcddde"
