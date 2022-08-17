@@ -1,20 +1,19 @@
 import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import App from "./App.vue";
-import Home from "./components/Home.vue";
+import ChatRoom from "./components/ChatRoom.vue";
 import "./index.css";
-
 
 const routes = [
   {
     path: "/discord-anonymous-post/",
-    component: Home,
+    component: ChatRoom,
   },
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes: routes
+  history: createWebHistory(),
+  routes: routes,
 });
 
 const app = createApp(App);
