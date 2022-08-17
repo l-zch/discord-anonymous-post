@@ -31,32 +31,33 @@ import { useCookies } from "@vueuse/integrations/useCookies";
 const route = useRoute();
 const router = useRouter();
 const code = route.query.code;
-const status = ref("noLogging");
+const cookies = useCookies(["locale"]);
+let access_token = cookies.get("access_token");
+
+const status = ref(access_token?"loggedIn":"noLogging");
 const userData = ref({});
 
 let get
 
-const cookies = useCookies(["locale"]);
-let access_token = cookies.get("access_token");
-
 login()
 
 async function get_access_token() {
-
-  if (!access_token && code) {
+  if (!access_token) {
+      status.value = "loading";
     const tokens = await exchangeCode(code);
-    access_token = tokens["access_token"]
+   access_token = tokens["access_token"]
     cookies.set("access_token", access_token, { path:'/', maxAge: 604800, secure: true, sameSite: true });
+    
   }
   return access_token;
 }
 
 async function login() {
   if (access_token || code) {
-    status.value = "loading";
     const access_token =  await get_access_token();
     get = getWithToken(access_token);
     userData.value = await get("/users/@me");
+    router.replace({ path: '/discord-anonymous-post/', query: null });
     status.value = "loggedIn";
   }
 }
