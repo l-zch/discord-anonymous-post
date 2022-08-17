@@ -1,9 +1,13 @@
 <template>
   <div class="h-screen w-screen bg-[#34495E] flex">
-    <RouterView></RouterView>
+    <RouterView :key="route.fullPath"></RouterView>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { useRoute} from "vue-router";
+const route = useRoute()
+
+</script>
 
 <style></style>
