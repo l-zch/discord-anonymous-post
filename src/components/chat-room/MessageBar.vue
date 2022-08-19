@@ -20,6 +20,7 @@
 <script setup>
 import { ref } from "vue";
 import { useFileDialog, useTextareaAutosize,onKeyStroke } from "@vueuse/core"
+import axios from "axios";
 
 
 const { files, open, reset } = useFileDialog();
@@ -28,7 +29,7 @@ const { textarea, input } = useTextareaAutosize();
 onKeyStroke('Enter', (e) => {
   if (!e.shiftKey) {
     if (input.value) {
-      console.log(input.value);
+      send(input.value);
       textarea.value.value = ''
       input.value = '';
     }
@@ -36,4 +37,7 @@ onKeyStroke('Enter', (e) => {
   }
 })
 
+async function send(content) {
+  axios.post("https://app.discordanonpost.repl.co/send", {'content':content})
+}
 </script>
