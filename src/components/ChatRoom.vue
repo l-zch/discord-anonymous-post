@@ -14,7 +14,7 @@
       <b>{{ userData?.username }}</b>
       <b class="text-[#b9bbbe]">#{{ userData?.discriminator }}</b>
     </div>
-    <MessageBar class="left-0 right-0 bottom-0 m-[16px] fixed"></MessageBar>
+    <MessageBar class="fixed left-0 right-0 bottom-0 m-[16px]"></MessageBar>
   </div>
 </template>
 
@@ -23,10 +23,9 @@ import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Login from "./Login.vue";
 import Loading from "./Loading.vue";
-import axios from "axios";
 import MessageBar from "./chat-room/MessageBar.vue";
 import { useCookies } from "@vueuse/integrations/useCookies";
-
+import { getWithToken, exchangeCode } from "../api/discord/http";
 
 const route = useRoute();
 const router = useRouter();
@@ -34,52 +33,35 @@ const code = route.query.code;
 const cookies = useCookies(["locale"]);
 let access_token = cookies.get("access_token");
 
-const status = ref(access_token?"loggedIn":"noLogging");
+const status = ref("noLogging");
 const userData = ref({});
 
-let get
+let get;
 
-login()
-
-async function get_access_token() {
-  if (!access_token) {
-      status.value = "loading";
-    const tokens = await exchangeCode(code);
-   access_token = tokens["access_token"]
-    cookies.set("access_token", access_token, { path:'/', maxAge: 604800, secure: true, sameSite: true });
-    
-  }
-  return access_token;
-}
+login();
 
 async function login() {
   if (access_token || code) {
-    const access_token =  await get_access_token();
+    status.value = "loading";
+    if (!access_token) {
+      try {
+        const tokens = await exchangeCode(code);
+        access_token = tokens["access_token"];
+        cookies.set("access_token", access_token, {
+          path: "/",
+          maxAge: 604800,
+          secure: true,
+          sameSite: true,
+        });
+      } catch (error) {
+        router.replace({ path: "/discord-anonymous-post/", query: null });
+        return;
+      }
+    }
     get = getWithToken(access_token);
     userData.value = await get("/users/@me");
-    router.replace({ path: '/discord-anonymous-post/', query: null });
+    router.replace({ path: "/discord-anonymous-post/", query: null });
     status.value = "loggedIn";
   }
-}
-
-async function exchangeCode() {
-  try {
-    const response = await axios.get(
-      `https://app.discordanonpost.repl.co/exchange-code?code=${code}`
-    );
-    return response.data;
-  } catch (error) {
-    router.replace({ path: '/discord-anonymous-post/', query: null });
-  }
-}
-
-function getWithToken(token) {
-  async function get(path) {
-    const response = await axios.get(`https://discord.com/api${path}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-  }
-  return get;
 }
 </script>
