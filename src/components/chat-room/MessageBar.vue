@@ -3,26 +3,19 @@
     class="m-[16px] flex max-h-[50%] flex-col rounded-[3px] bg-[#40444b] px-[16px] py-[11px]"
   >
     <Attachments></Attachments>
-    <div class="flex h-max w-full overflow-y-auto">
-      <svg
-        class="fixed mt-[2px]"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        @click="open"
-      >
-        <path
-          fill="#dcddde"
-          d="M12 2.00098C6.486 2.00098 2 6.48698 2 12.001C2 17.515 6.486 22.001 12 22.001C17.514 22.001 22 17.515 22 12.001C22 6.48698 17.514 2.00098 12 2.00098ZM17 13.001H13V17.001H11V13.001H7V11.001H11V7.00098H13V11.001H17V13.001Z"
-        ></path>
-      </svg>
-
+    <div class="flex  w-full h-full relative overflow-y-auto">
+    <div class="mt-[2px] h-full w-[24px]">
+      <UploadButton class="fixed" @click="open"></UploadButton>
+    </div>
       <textarea
         ref="textarea"
         v-model="input"
-        class="ml-[40px] w-full resize-none bg-transparent placeholder-[#dcddde] outline-none"
+        class="mx-[11px] flex-grow resize-none bg-transparent placeholder-[#dcddde] outline-none"
         placeholder="傳訊息到 😼匿名貓咪"
       />
+      <div class="w-[24px] h-full mt-[2px] ">
+        <div class="bg-red-500 w-[24px] h-[24px] rounded-[12px]  fixed"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -30,10 +23,12 @@
 <script setup>
 import { watch } from "vue";
 import { useFileDialog, useTextareaAutosize, onKeyStroke } from "@vueuse/core";
-import Attachments from './Attachments.vue'
 import axios from "axios";
+
 import { baseURL } from "../../api/constant";
-import { useStore } from './store'
+import { useStore } from "./store";
+import Attachments from "./Attachments.vue";
+import UploadButton from "./uploadButton.vue";
 
 
 const { open, files } = useFileDialog();
@@ -53,10 +48,9 @@ onKeyStroke("Enter", (e) => {
 });
 
 watch(files, (newFiles, _) => {
-  console.log("check")
-  for (let file of newFiles) 
-    messageStore.addAttachments(file);
-})
+  console.log("check");
+  for (let file of newFiles) messageStore.addAttachments(file);
+});
 
 async function send(content) {
   axios.post(
