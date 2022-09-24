@@ -26,16 +26,10 @@ import { useFileDialog } from "@vueuse/core";
 import { useStore } from './store'
 import { storeToRefs } from 'pinia'
 
-const { files } = useFileDialog();
+
 const messageStore = useStore();
 const { attachments } = storeToRefs(messageStore)
 
-
-watch(files, (newFiles, _) => {
-  alert("check")
-  for (let file of newFiles) 
-    messageStore.addAttachments(file);
-})
 
 const attachmentIsEmpty = () => !Object.keys(attachments.value).length
 
