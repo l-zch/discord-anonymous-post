@@ -8,13 +8,13 @@ export const useStore = defineStore('message', {
       id: 0
   }),
 
-  actions: () => ({
+  actions: {
     addAttachments(file) {
-      this.addAttachments[id] = file;
+      this.attachments[this.id] = file;
       ++this.id;
     },
     removeAttachment(id) {
-      delete this.addAttachments[id];
+      delete this.attachments[id];
     },
-  })
+  }
 });
