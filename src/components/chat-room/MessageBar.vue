@@ -2,25 +2,7 @@
   <div
     class="m-[16px] flex max-h-[50%] flex-col rounded-[3px] bg-[#40444b] px-[16px] py-[11px]"
   >
-    <div class="flex flex-row border-b-2 border-[#4c4c4c] mb-[11px]" v-if="!fileIsEmpty()">
-      <div
-        class="relative mb-[10px] mr-[20px] flex h-[150px] w-[150px] shrink-0 flex-col rounded-[10px] bg-[#363636]"
-        v-for="[fileID, file] in Object.entries(uploadedFiles)"
-      >
-        <div
-          class="absolute right-[-10px] h-[30px] w-[30px] rounded-[5px] bg-black"
-          @click="removeFile(fileID)"
-        >
-          X
-        </div>
-        <div class="z-10 m-auto h-[60%] w-[60%] bg-red-200"></div>
-        <text
-          class="mx-auto mt-[-10%] w-[80%] overflow-hidden text-ellipsis whitespace-nowrap p-[5px] text-center"
-        >
-          {{ file.name }}
-        </text>
-      </div>
-    </div>
+    <Attachments></Attachments>
     <div class="flex h-max w-full overflow-y-auto">
       <svg
         class="fixed mt-[2px]"
@@ -46,26 +28,17 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { useFileDialog, useTextareaAutosize, onKeyStroke } from "@vueuse/core";
+import Attachments from './Attachments.vue'
 import axios from "axios";
 import { baseURL } from "../../api/constant";
+import { useStore } from './store'
 
-const { files, open, reset } = useFileDialog();
+
+const { open, files } = useFileDialog();
 const { textarea, input } = useTextareaAutosize();
-let fileID = 0;
-const uploadedFiles = ref({})
-
-watch(files, (newFiles, _) => {
-  for (let file of newFiles) {
-    uploadedFiles.value[fileID] = file;
-    ++fileID;
-  }
-})
-
-const removeFile = fileID => delete uploadedFiles.value[fileID]
-
-const fileIsEmpty = () => !Object.keys(uploadedFiles.value).length
+const messageStore = useStore();
 
 onKeyStroke("Enter", (e) => {
   if (!e.shiftKey) {
@@ -73,12 +46,17 @@ onKeyStroke("Enter", (e) => {
       send(input.value);
       textarea.value.value = "";
       input.value = "";
-      fileID = 0;
-      uploadedFiles.value = {};
+      messageStore.$reset();
     }
     e.preventDefault();
   }
 });
+
+watch(files, (newFiles, _) => {
+  console.log("check")
+  for (let file of newFiles) 
+    messageStore.addAttachments(file);
+})
 
 async function send(content) {
   axios.post(
