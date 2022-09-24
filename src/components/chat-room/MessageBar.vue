@@ -2,7 +2,7 @@
   <div
     class="m-[16px] flex max-h-[50%] flex-col rounded-[3px] bg-[#40444b] px-[16px] py-[11px]"
   >
-    <div class="flex flex-row border-b-2 border-[#4c4c4c] mb-[11px]" v-if="!fileIsEmpty(">
+    <div class="flex flex-row border-b-2 border-[#4c4c4c] mb-[11px]" v-if="!fileIsEmpty()">
       <div
         class="relative mb-[10px] mr-[20px] flex h-[150px] w-[150px] shrink-0 flex-col rounded-[10px] bg-[#363636]"
         v-for="[fileID, file] in Object.entries(uploadedFiles)"
