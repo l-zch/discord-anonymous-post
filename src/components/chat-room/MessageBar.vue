@@ -28,7 +28,7 @@ import axios from "axios";
 import { baseURL } from "../../api/constant";
 import { useStore } from "./store";
 import Attachments from "./Attachments.vue";
-import UploadButton from "./uploadButton.vue";
+import UploadButton from "./UploadButton.vue";
 
 
 const { open, files } = useFileDialog();
