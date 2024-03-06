@@ -10,7 +10,7 @@
   "dependencies": {
     "@vueuse/core": "^9.1.0",
     "@vueuse/integrations": "^9.1.0",
-    "axios": "^0.27.2",
+    "axios": "^0.28.0",
     "gh-pages": "^4.0.0",
     "pinia": "^2.0.22",
     "universal-cookie": "^4.0.4",
